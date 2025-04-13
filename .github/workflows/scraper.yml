@@ -1,0 +1,30 @@
+name: Run Scraper
+
+on:
+  schedule:
+    - cron: "*/1 * * * *"  # Se ejecuta cada 1 minuto
+  workflow_dispatch:   # Permite ejecutar manualmente si es necesario
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest  # El trabajo se ejecutará en un contenedor de Ubuntu
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Descargamos el código del repositorio
+
+      - name: Set up Python
+        uses: actions/setup-python@v2  # Configuramos Python
+        with:
+          python-version: '3.9'  # Versión de Python a usar
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip  # Actualizamos pip
+          pip install -r requirements.txt  # Instalamos las dependencias del proyecto
+
+      - name: Run scraper
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}  # Usamos el token de Telegram desde los secrets
+        run: |
+          python fia_scraper.py  # Ejecutamos el scraper
